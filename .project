@@ -3,6 +3,7 @@
 	<name>opencv-stereo</name>
 	<comment></comment>
 	<projects>
+		<project>python libs</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

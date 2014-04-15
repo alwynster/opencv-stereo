@@ -10,9 +10,9 @@ import os
 from hist import hist
 
 __analysis__ = True
-__library__ = 'tsukuba'
-__begin__ = 1
-__end__ = 1800
+__library__ = 'kitti'
+__begin__ = 0
+__end__ = 394
 __bin__ = {'var': 150, "bm": 50, "hh": 50, "sad": 96, "sgbm": 50 }
 __fps__ = {'kitti': 10.0, 'tsukuba': 25.0}
 
@@ -219,7 +219,8 @@ def execute(algs):
 
 if __name__ == "__main__":
     algs = ["hh", "var", "bm", "sad", "sgbm"] # "var", "bm", "hh", "sad", "sgbm"
-    execute(["hh", "var", "bm", "sad", "sgbm"])
-    execute(["var"])
-    execute(["sad"])
+    execute(["bm"])
+    # execute(["hh", "var", "bm", "sad", "sgbm"])
+    # execute(["var"])
+    # execute(["sad"])
     
