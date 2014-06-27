@@ -9,15 +9,15 @@ import datetime
 from timer import timer
 import math
 
-__library__ = 'tsukuba'
+__library__ = 'kitti'
 __algs__ = ['bm', 'sad', 'hh', 'var', 'sgbm'] #var bm sgbm sad hh
-__G__ = range(1,4)
+__G__ = range(1,2)
 __timer__ = True
 __dbg__ = False
-__begin__ = 1
-__end__ = 1800
+__begin__ = 0
+__end__ = 394
 __dtype__ = 'float32'
-__save_data_only__ = True
+__save_data_only__ = False
 
 def execute(lib=__library__):
     start = datetime.datetime.now()
@@ -36,7 +36,7 @@ def execute(lib=__library__):
         # shape = list(np.array(shape) * 2)
         shape = (shape[0], shape[1])
     else:
-        print shape
+        # print shape
         shape = (shape[0], shape[1] * 2)
 
     print "starting..."
@@ -60,10 +60,12 @@ def execute(lib=__library__):
             for i in range(__begin__, __end__ + 1):
                 orig = images.fetch_orig(i, __library__)
                 ground = images.fetch_ground(i, __library__)
-
                 disp = images.fetch_disp(alg, i, __library__)
 
+
                 if disp is not None and ground_avail:
+                    if len(disp.shape) == 3: disp = disp[:,:,0]
+                    
                     diff = ((ground.astype(__dtype__)) - (disp.astype(__dtype__))).astype(__dtype__)
 
                     # exclude not calculated
@@ -127,11 +129,11 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
         pp.hold()
         pp.title("%s - %d gmm" % (alg, G))
         model.draw_gmm_hist(fig=False)
+    print lib, alg, Gd
     model.print_results()
     if show:
         pp.show()
  
-
 if __name__ == "__main__":
     
     execute()
