@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 from gmm import gmm
 import cv2
 import numpy as np
@@ -10,12 +12,12 @@ from timer import timer
 import math
 
 __library__ = 'kitti'
-__algs__ = ['bm', 'sad', 'hh', 'var', 'sgbm'] #var bm sgbm sad hh
-__G__ = range(1,2)
+__algs__ = ['sad'] #, 'sad', 'hh', 'var', 'sgbm'] #var bm sgbm sad hh
+__G__ = range(1,3)
 __timer__ = True
 __dbg__ = False
 __begin__ = 0
-__end__ = 394
+__end__ = 100
 __dtype__ = 'float32'
 __save_data_only__ = False
 
@@ -107,7 +109,7 @@ def execute(lib=__library__):
         for alg in __algs__:
             print 'Calculating for alg', alg
 
-            data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(10)]
+            data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(int(__begin__ / 10.), int(math.ceil(__end__ / 10.)))]
 
             print 'creating model'
             model = gmm(data_files, debug=__dbg__, history=True, timer=__timer__)
@@ -125,11 +127,15 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
     model = gmm(texts = True, gmm_txt='%s/gmm_%s_%d.npz' % (lib, alg, G), hist_txt=('%s/hist_%s_%d.npz' % (lib, alg, G)))
     if draw:
         if draw_hist:
-            model.draw_hist(fig=True)
+            model.draw_hist(fig=True, limit_hist=False)
         pp.hold()
         pp.title("%s - %d gmm" % (alg, G))
         model.draw_gmm_hist(fig=False)
-    print lib, alg, Gd
+        
+        if draw_hist:
+            pp.legend(['Histogram', 'GMM'])
+            
+    print lib, alg, G
     model.print_results()
     if show:
         pp.show()
