@@ -12,8 +12,8 @@ from timer import timer
 import math
 
 __library__ = 'kitti'
-__algs__ = ['sad'] #, 'sad', 'hh', 'var', 'sgbm'] #var bm sgbm sad hh
-__G__ = range(1,3)
+__algs__ = ['bm'] #var bm sgbm sad hh
+__G__ = range(1,4)
 __timer__ = True
 __dbg__ = False
 __begin__ = 0
@@ -56,7 +56,8 @@ def execute(lib=__library__):
         file_count = 0
         max_count = 10
 
-        
+        found_count = 0
+        full_count = 0
         if __save_data_only__:
             print 'fetching data'
             for i in range(__begin__, __end__ + 1):
@@ -69,18 +70,19 @@ def execute(lib=__library__):
                     if len(disp.shape) == 3: disp = disp[:,:,0]
                     
                     diff = ((ground.astype(__dtype__)) - (disp.astype(__dtype__))).astype(__dtype__)
+                    full_count += np.product(diff.shape)
 
                     # exclude not calculated
                     flat = diff[np.where(disp != 0)]
                     flat_ground = ground[np.where(disp != 0)]
                     flat = flat[np.where(flat_ground != 0)]
+                    
+                    found_count += len(flat)
                     # exclude incalculable values
                     # diff[ground > 16*6] = 0
 
                     diff = np.array(diff, dtype=__dtype__)
 
-                    # diff = diff[:, :, 0].flatten()
-                    # diff = diff[np.where(diff != 0)]
                     overall_diff = np.concatenate((overall_diff, flat))
 
                     if file_count == max_count:
@@ -91,11 +93,13 @@ def execute(lib=__library__):
                         file_num += 1
                     else:
                         file_count += 1
-
+        
                 if __timer__:
                     tm.progress(i)
-
-            np.savez('%s/data/data_%s_%d.npz' % (lib, alg, file_num), data=overall_diff)
+        
+        print 'found', found_count, 'of', full_count
+        print float(found_count) / full_count * 100.0 
+#             np.savez('%s/data/data_%s_%d.npz' % (lib, alg, file_num), data=overall_diff)
             
     if __save_data_only__: return
 
@@ -123,23 +127,56 @@ def execute(lib=__library__):
 
         print "done"
 
-def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_hist=True):
-    model = gmm(texts = True, gmm_txt='%s/gmm_%s_%d.npz' % (lib, alg, G), hist_txt=('%s/hist_%s_%d.npz' % (lib, alg, G)))
+def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_hist=True, save=False, xlim=None, print_result=True):
+    if G == 0:
+        model = gmm(texts = True, gmm_txt='%s/gmm_%s_%d.npz' % (lib, alg, G+1), hist_txt=('%s/hist_%s_%d.npz' % (lib, alg, G+1)))
+    else:
+        model = gmm(texts = True, gmm_txt='%s/gmm_%s_%d.npz' % (lib, alg, G), hist_txt=('%s/hist_%s_%d.npz' % (lib, alg, G)))
+    x = model.bins
+    bin_width = x[1] - x[0]
+
+    y = None        
+    if G != 0:
+        y = [model.pdf_integral(xi - bin_width/2., xi + bin_width/2.) for xi in x]
+    
+    abc = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+    G_code = abc[G]
+    if G != 0:
+        leg = ['Error hist', 'GMM'][::-1]
+    else:
+        leg = ['Error hist']
+    if save:
+        leg = ['\ss{%s}' % l for l in leg]
+#         if G == 0: leg = None
+        images.save_latex(x, y, leg, 'gmm_%s_%s' % (alg, G_code), 'Error', 'Relative weight', 0.48, xlim=xlim, model=model, ylim=None)
     if draw:
         if draw_hist:
-            model.draw_hist(fig=True, limit_hist=False)
-        pp.hold()
-        pp.title("%s - %d gmm" % (alg, G))
-        model.draw_gmm_hist(fig=False)
+            pp.figure()
+            pp.bar(model.bins[:-1], model.count)
+            pp.hold(True)
+        if xlim is not None:
+            pp.xlim(xlim)
         
-        if draw_hist:
-            pp.legend(['Histogram', 'GMM'])
+        # pp.stem(x, y, markerfmt='xr', linefmt='r-')
+        if G != 0:
+            pp.plot(x, y, color='r', linewidth=3)
+
+#         if draw_hist:
+#             model.draw_hist(fig=True, limit_hist=False)
+#         pp.hold()
+#         pp.title("%s - %d gmm" % (alg, G))
+#         model.draw_gmm_hist(fig=False)
+#         
+#         if draw_hist:
+#             pp.legend(['Histogram', 'GMM'])
             
     print lib, alg, G
-    model.print_results()
+    if print_result: model.print_results()
     if show:
         pp.show()
  
 if __name__ == "__main__":
-    
+    __save_data_only__ = True    
     execute()
+#     __save_data_only__ = False    
+#     execute()
