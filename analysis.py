@@ -12,7 +12,7 @@ from timer import timer
 import math
 
 __library__ = 'kitti'
-__algs__ = ['bm'] #var bm sgbm sad hh
+__algs__ = ['sgbm'] #var bm sgbm sad hh
 __G__ = range(1,4)
 __timer__ = True
 __dbg__ = False

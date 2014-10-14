@@ -2,9 +2,9 @@ import cv2
 import numpy as np
 import subprocess
 import matplotlib.pyplot as pp
-from timer import timer
+# from timer import timer
 
-__library__ = 'kitti'
+__library__ = 'tsukuba'
 def calculate_disp(min_frame, max_frame, algs):
     block = 5
     base = __library__ + "/"
@@ -21,9 +21,10 @@ def calculate_disp(min_frame, max_frame, algs):
     percent = -1
     total_frames = max_frame - min_frame
 
-    tm = timer(min_frame, max_frame, True)
+    # tm = timer(min_frame, max_frame, True)
     for frame in range(min_frame, max_frame+1):
         for alg in algs:
+            print "Performing for alg", alg
             args = ["OpenCV.exe", base + "left/" + (form % ('L', frame)) + ".png", base + "right/" + (form % ('R', frame)) + ".png", "--algorithm=" + alg, "--max-disparity=" + str(disparities), "--blocksize=" + str(block), "--no-display", "-o", base + "output/" + (output_form % (alg, frame)) + ".png"]
             try:
                 subprocess.call(args, shell=True)
@@ -31,7 +32,7 @@ def calculate_disp(min_frame, max_frame, algs):
                 print 'Error in OpenCV program'
                 return
 
-        tm.progress(frame)
+# tm.progress(frame)
 
 ##    disp = cv2.imread("disp_" + alg + "_" + str(block) + "_" + ("%010d" % frame) + ".png")
 ##
@@ -55,6 +56,6 @@ def calculate_disp(min_frame, max_frame, algs):
 
 
 if __name__ == "__main__":
-    start = 0
-    end = 394
+    start = 1
+    end = 1
     calculate_disp(start, end, ["bm", "var", "hh", "sgbm"])
