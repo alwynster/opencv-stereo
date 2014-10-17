@@ -12,12 +12,12 @@ from timer import timer
 import math
 
 __library__ = 'kitti'
-__algs__ = ['bm'] #var bm sgbm sad hh
-__G__ = range(1,4)
+__algs__ = ['bm', 'var', 'sgbm'] #var bm sgbm sad hh
+__G__ = range(1,5)
 __timer__ = True
 __dbg__ = False
-__begin__ = 0
-__end__ = 100
+__begin__ = 1
+__end__ = 101
 __dtype__ = 'float32'
 __save_data_only__ = False
 
@@ -60,24 +60,30 @@ def execute(lib=__library__):
         full_count = 0
         if __save_data_only__:
             print 'fetching data'
+	    print __library__
             for i in range(__begin__, __end__ + 1):
                 orig = images.fetch_orig(i, __library__)
                 ground = images.fetch_ground(i, __library__)
                 disp = images.fetch_disp(alg, i, __library__)
 
-
+		if orig is None: print 'orig is None'
+		if ground is None: print 'ground is None'
+		if disp is None: print 'disp is None'
+		
                 if disp is not None and ground_avail:
                     if len(disp.shape) == 3: disp = disp[:,:,0]
                     
                     diff = ((ground.astype(__dtype__)) - (disp.astype(__dtype__))).astype(__dtype__)
                     full_count += np.product(diff.shape)
+		    
 
                     # exclude not calculated
                     flat = diff[np.where(disp != 0)]
                     flat_ground = ground[np.where(disp != 0)]
                     flat = flat[np.where(flat_ground != 0)]
+
+		    found_count += len(np.nonzero(flat.flatten())[0])
                     
-                    found_count += len(flat)
                     # exclude incalculable values
                     # diff[ground > 16*6] = 0
 
@@ -86,6 +92,7 @@ def execute(lib=__library__):
                     overall_diff = np.concatenate((overall_diff, flat))
 
                     if file_count == max_count:
+			print 'saving', '%s/data/data_%s_%d.npz' % (lib, alg, file_num), i
                         np.savez('%s/data/data_%s_%d.npz' % (lib, alg, file_num), data=overall_diff)
                         overall_diff = np.array([], dtype=__dtype__)
                         
@@ -97,8 +104,10 @@ def execute(lib=__library__):
                 if __timer__:
                     tm.progress(i)
         
-        print 'found', found_count, 'of', full_count
-        print float(found_count) / full_count * 100.0 
+            print 'found', found_count, 'of', full_count
+	    raw_input('wait')
+	    if full_count != 0:
+	            print float(found_count) / full_count * 100.0 
 #             np.savez('%s/data/data_%s_%d.npz' % (lib, alg, file_num), data=overall_diff)
             
     if __save_data_only__: return
@@ -114,6 +123,7 @@ def execute(lib=__library__):
             print 'Calculating for alg', alg
 
             data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(int(__begin__ / 10.), int(math.ceil(__end__ / 10.)))]
+	    if __library__ == 'tsukuba': data_files=data_files[:-1]
 
             print 'creating model'
             model = gmm(data_files, debug=__dbg__, history=True, timer=__timer__)
@@ -178,5 +188,5 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
 if __name__ == "__main__":
     __save_data_only__ = True    
     execute()
-#     __save_data_only__ = False    
-#     execute()
+    __save_data_only__ = False    
+    execute()

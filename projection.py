@@ -222,8 +222,8 @@ if __name__ == "__main__":
     print R2
 
     __draw__ = False
-    start = 0
-    end = 394
+    start = 40
+    end = 40
     tm = timer.timer(start, end, date=True)
     for frame in range(start, end+1):
         tm.progress(frame)
@@ -239,10 +239,10 @@ if __name__ == "__main__":
 
         disps.append(disp)
 
-        disps.append(interpolate(disp, 3))
-        disps.append(interpolate(disp, 5))
-        disps.append(interpolate(disp, 7))
-        disps.append(interpolate(disp, 9))
+        #disps.append(interpolate(disp, 3))
+        #disps.append(interpolate(disp, 5))
+        #disps.append(interpolate(disp, 7))
+        #disps.append(interpolate(disp, 9))
         
         ground = consolodate(disps)
 
@@ -253,5 +253,5 @@ if __name__ == "__main__":
             cv2.imshow('interp', images.drawable(ground, False))
             cv2.waitKey()
         else:
-            np.savez('kitti/laser/disp_kitti_la_%05d.npz' % frame, ground=ground)
+            np.savez('kitti/laser/disp_kitti_la_%05d_sparse.npz' % frame, ground=ground)
             # cv2.imwrite('kitti/laser/disp_kitti_la_%05d.png' % frame, ground)

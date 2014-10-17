@@ -1,8 +1,9 @@
+#!/usr/bin/env python2
 from analysis import plot_gmm
 import matplotlib.pyplot as pp
 
 __algs__    = ['sad'] # ['bm', 'sad', 'hh', 'var', 'sgbm'] # 'bm',
-__algs__    = ['bm', 'sad', 'var'] 
+__algs__    = ['sgbm']
 save        = True
 limits      = {'bm': (-50,50), 'sgbm': (-50,50), 'hh': None, 'var':None, 'sad':(-75,75)}
 
