@@ -11,14 +11,9 @@ import datetime
 from timer import timer
 import math
 
-__library__ = 'kitti'
-<<<<<<< HEAD
-__algs__ = ['bm', 'var', 'sgbm'] #var bm sgbm sad hh
-__G__ = range(1,5)
-=======
+__library__ = 'tsukuba'
 __algs__ = ['sgbm'] #var bm sgbm sad hh
-__G__ = range(1,4)
->>>>>>> f6444e91e2f1dba5697fc83d37bcb3119415dd02
+__G__ = range(1,2)
 __timer__ = True
 __dbg__ = False
 __begin__ = 1
@@ -110,8 +105,8 @@ def execute(lib=__library__):
                     tm.progress(i)
         
             print 'found', found_count, 'of', full_count
-	    raw_input('wait')
-	    if full_count != 0:
+	    
+        if full_count != 0:
 	            print float(found_count) / full_count * 100.0 
 #             np.savez('%s/data/data_%s_%d.npz' % (lib, alg, file_num), data=overall_diff)
             
@@ -149,6 +144,7 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
         model = gmm(texts = True, gmm_txt='%s/gmm_%s_%d.npz' % (lib, alg, G), hist_txt=('%s/hist_%s_%d.npz' % (lib, alg, G)))
     x = model.bins
     bin_width = x[1] - x[0]
+    x = np.linspace(model.bins[0], model.bins[-1], num=10000)
 
     y = None        
     if G != 0:
@@ -191,7 +187,7 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
         pp.show()
  
 if __name__ == "__main__":
-    __save_data_only__ = True    
-    execute()
+    # __save_data_only__ = True    
+    # execute()
     __save_data_only__ = False    
     execute()

@@ -3,14 +3,13 @@ from analysis import plot_gmm
 import matplotlib.pyplot as pp
 
 __algs__    = ['sad'] # ['bm', 'sad', 'hh', 'var', 'sgbm'] # 'bm',
-<<<<<<< HEAD
-__algs__    = ['sgbm']
-=======
-__algs__    = ['bm', 'sgbm'] 
->>>>>>> f6444e91e2f1dba5697fc83d37bcb3119415dd02
+__algs__    = ['sgbm'] 
 save        = True
-lib         = 'kitti'
-limits      = {'bm': (-25,25), 'sgbm': (-25,25), 'hh': (-50, 50), 'var':(-150,100), 'sad':(-75,75)}
+lib         = 'tsukuba'
+if lib == 'kitti':
+    limits      = {'bm': (-25,25), 'sgbm': (-25,25), 'hh': (-50, 50), 'var':(-150,100), 'sad':(-75,75)}
+else:
+    limits      = {'bm': (-5,5), 'sgbm': (-20,20), 'hh': (-50, 50), 'var':(-150,50), 'sad':(-75,75)}
 
 bgn = 1
 end = 3
