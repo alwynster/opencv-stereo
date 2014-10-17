@@ -16,7 +16,7 @@ def calculate_disp(min_frame, max_frame, algs):
         
     output_form = "disp_" + __library__ + "_%s_%05d"
 
-    disparities = 16*6
+    disparities = 16*7
 
     percent = -1
     total_frames = max_frame - min_frame
@@ -58,4 +58,5 @@ def calculate_disp(min_frame, max_frame, algs):
 if __name__ == "__main__":
     start = 1
     end = 1
-    calculate_disp(start, end, ["bm", "var", "hh", "sgbm"])
+    # calculate_disp(start, end, ["bm", "var", "hh", "sgbm"])
+    calculate_disp(start, end, ["sgbm"])

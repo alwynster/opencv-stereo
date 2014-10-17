@@ -148,7 +148,7 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
     if save:
         leg = ['\ss{%s}' % l for l in leg]
 #         if G == 0: leg = None
-        images.save_latex(x, y, leg, 'gmm_%s_%s' % (alg, G_code), 'Error', 'Relative weight', 0.48, xlim=xlim, model=model, ylim=None)
+        images.save_latex(x, y, leg, '%s_gmm_%s_%s' % (lib, alg, G_code), 'Error', 'Relative weight', 0.48, xlim=xlim, model=model, ylim=None)
     if draw:
         if draw_hist:
             pp.figure()
