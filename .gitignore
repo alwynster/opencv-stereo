@@ -4,3 +4,5 @@
 *.pyc
 *.m4v
 *.avi
+*.dll
+Thumbs.db

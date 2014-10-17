@@ -12,8 +12,13 @@ from timer import timer
 import math
 
 __library__ = 'kitti'
+<<<<<<< HEAD
 __algs__ = ['bm', 'var', 'sgbm'] #var bm sgbm sad hh
 __G__ = range(1,5)
+=======
+__algs__ = ['sgbm'] #var bm sgbm sad hh
+__G__ = range(1,4)
+>>>>>>> f6444e91e2f1dba5697fc83d37bcb3119415dd02
 __timer__ = True
 __dbg__ = False
 __begin__ = 1
@@ -158,7 +163,7 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
     if save:
         leg = ['\ss{%s}' % l for l in leg]
 #         if G == 0: leg = None
-        images.save_latex(x, y, leg, 'gmm_%s_%s' % (alg, G_code), 'Error', 'Relative weight', 0.48, xlim=xlim, model=model, ylim=None)
+        images.save_latex(x, y, leg, '%s_gmm_%s_%s' % (lib, alg, G_code), 'Error', 'Relative weight', 0.48, xlim=xlim, model=model, ylim=None)
     if draw:
         if draw_hist:
             pp.figure()
