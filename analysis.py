@@ -11,13 +11,13 @@ import datetime
 from timer import timer
 import math
 
-__library__ = 'tsukuba'
+__library__ = 'kitti'
 __algs__ = ['sgbm'] #var bm sgbm sad hh
-__G__ = range(1,2)
+__G__ = range(2,3)
 __timer__ = True
 __dbg__ = False
-__begin__ = 1
-__end__ = 101
+__begin__ = 250
+__end__ = 351
 __dtype__ = 'float32'
 __save_data_only__ = False
 
@@ -122,7 +122,9 @@ def execute(lib=__library__):
         for alg in __algs__:
             print 'Calculating for alg', alg
 
-            data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(int(__begin__ / 10.), int(math.ceil(__end__ / 10.)))]
+            data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(0, int(math.floor((__end__ - __begin__) / 10.)))]
+            print data_files
+	    # data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(int(__begin__ / 10.), int(math.ceil(__end__ / 10.)))]
 	    if __library__ == 'tsukuba': data_files=data_files[:-1]
 
             print 'creating model'
@@ -187,7 +189,7 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
         pp.show()
  
 if __name__ == "__main__":
-    # __save_data_only__ = True    
-    # execute()
+    __save_data_only__ = True    
+    execute()
     __save_data_only__ = False    
     execute()
