@@ -11,6 +11,134 @@ import math
 import sys
 import os
 import shutil
+import matplotlib.pyplot as pp
+
+eps = 1e-3
+if len(sys.argv) != 4:
+    print "USAGE: compare_octree_csv.py correct_tree.csv compare_tree.csv height"
+    sys.exit()
+
+minx = maxx = miny = maxy = res = 0.0
+
+file1 = sys.argv[1]
+file2 = sys.argv[2]
+height = float(sys.argv[3])
+
+data = list()
+for line in open(file1):
+    spl = line[:-1].split(",")
+    # first line
+    if res == 0:
+        minx, maxx, miny, maxy, res = np.array(spl).astype('float')
+    else:
+        add = True
+        dat = np.array(spl).astype('float')
+        if abs(dat[2] - height) <= dat[3]/2.0:
+            data.append(dat)
+
+res = 0
+data2 = list()
+for line in open(file2):
+    spl = line[:-1].split(",")
+    # first line
+    if res == 0:
+        nminx, nmaxx, nminy, nmaxy, res = np.array(spl).astype('float')
+        if nminx < minx: minx = nminx
+        if nminy < miny: miny = nminy
+        if nmaxx > maxx: maxx = nmaxx
+        if nmaxy > maxy: maxy = nmaxy
+    else:
+        dat = np.array(spl).astype('float')
+        if abs(dat[2] - height) <= dat[3]/2.0:
+            data2.append(dat)
+
+img = np.zeros(((maxy - miny) / res, (maxx - minx) / res), dtype='float')
+
+for dat in data:
+    x, y, z, size, val = dat
+    x -= minx
+    y -= miny
+    x /= res
+    y /= res
+
+    '''
+    p = math.exp(val)/(1+math.exp(val))
+    if p <= 0.45: val = -100
+    elif p >= 0.55: val = 100
+    else: val = 0
+    '''
+    
+    sz = (size/res)
+    img[round(y-sz/2):round(y+sz/2), round(x-sz/2):round(x+sz/2)] = val # xp / (1 + xp)
+
+
+img2 = np.zeros(((maxy - miny) / res, (maxx - minx) / res), dtype='float')
+
+for dat in data2:
+    x, y, z, size, val = dat
+    x -= minx
+    y -= miny
+    x /= res
+    y /= res
+
+    sz = (size/res)
+    img2[round(y-sz/2):round(y+sz/2), round(x-sz/2):round(x+sz/2)] = val # xp / (1 + xp)
+
+img[np.where(img == np.min(img))] = -1000
+img2[np.where(img2 == np.min(img2))] = np.min(img)
+
+'''
+pp.hist(img.flatten())
+pp.figure()
+pp.hist(img2.flatten())
+pp.show()
+'''
+
+xp = np.exp(img)
+img = xp / (1+xp)
+
+xp = np.exp(img2)
+img2 = xp / (1+xp)
+
+# equalize:
+'''
+print np.min(img), np.min(img2)
+img[np.where(img < 0.5)] = np.min(img2)
+
+pp.hist(img2[:,:].flatten())
+pp.show()
+'''
+
+'''
+cv2.imwrite('a.png', (img * 255).astype('uint8'))
+cv2.imwrite('b.png', (img2 * 255).astype('uint8'))
+dimg = (img2-img)
+cv2.imwrite('c.png', (dimg * 255).astype('uint8'))
+'''
+
+# compare:
+sh = img.shape
+diffs = list()
+for i in range(sh[0]):
+    for j in range(sh[1]):
+        # ignore unknown
+        if abs(img2[i, j] - 0.5) < eps:
+            continue
+        # add from ground
+        diff = img2[i, j] - img[i, j]
+        if abs(diff) > eps:
+            diffs.append(diff)
+
+fn = 'compare/%s_%s.npz' % (file1, file2)
+print
+print 'saving', fn
+np.savez(fn, diffs=np.array(diffs))
+try:
+    shutil.copyfile(fn, '/copy/%s_%s.npz' % (file1,file2))
+except:
+    print '',
+        
+'''
 
 class data_point:
     x, y, z, size, val = None, None, None, None, None
@@ -25,9 +153,7 @@ class data_point:
     def __str__(self):
         return '(%.2f, %.2f, %.2f, %.2f)' % (self.x, self.y, self.y, self.size) 
 
-if len(sys.argv) != 3 and len(sys.argv) != 4:
-    print "USAGE: compare_octree_csv.py correct_tree.csv compare_tree.csv [height]"
-    sys.exit()
+
 
 height = None
 file1 = sys.argv[1]
@@ -85,7 +211,7 @@ for point in correct_points:
                         if point2.size > point.size:
                             incorrect_points[i].uses += 1
                             remove = incorrect_points[i].uses == num
-                            differences.append((point2.val - point.val) / num)
+                            differences.append((point2.val - point.val))
                         else:
                             brk = True
                             remove = True
@@ -115,5 +241,8 @@ file = 'compare/%s_%s.npz' % (file1, file2)
 print
 print 'saving', file
 np.savez(file, diffs=np.array(differences))
-shutil.copyfile(file, '/copy/%s_%s.npz' % 
-(file1,file2))
+try:
+    shutil.copyfile(file, '/copy/%s_%s.npz' % (file1,file2))
+except:
+    print '',
+'''
