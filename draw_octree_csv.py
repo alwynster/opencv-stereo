@@ -37,6 +37,7 @@ for line in f:
     # first line
     if res == 0:
         minx, maxx, miny, maxy, res = np.array(spl).astype('float')
+	print spl
     else:
         add = True
         dat = np.array(spl).astype('float')

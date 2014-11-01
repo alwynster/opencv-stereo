@@ -10,6 +10,7 @@ import cv2
 import math
 import sys
 import os
+import shutil
 
 class data_point:
     x, y, z, size, val = None, None, None, None, None
@@ -48,12 +49,14 @@ print 'reading', file2
 incorrect_points = list()
 for line in open(file2):
     dat = line.split(',')
-    pt = data_point(np.array(dat).astype('float'))
-    add = True
-    if height is not None:
-        if abs(pt.z - height) >= pt.size/2.0:
-            add = False
-    if add: incorrect_points.append(pt)
+    dat = np.array(dat).astype('float')
+    if dat[4] != 0.5:
+        pt = data_point(dat)
+        add = True
+        if height is not None:
+            if abs(pt.z - height) >= pt.size/2.0:
+                add = False
+        if add: incorrect_points.append(pt)
     
 print
 print 'finding incorrect points'
@@ -66,6 +69,7 @@ for point in correct_points:
         remove = False
         brk = False
         point2 = incorrect_points[i]
+
         if abs(point.x - point2.x) < point.size / 2.0:
             if abs(point.y - point2.y) < point.size / 2.0:
                 if abs(point.z - point2.z) < point.size / 2.0:
@@ -111,4 +115,5 @@ file = 'compare/%s_%s.npz' % (file1, file2)
 print
 print 'saving', file
 np.savez(file, diffs=np.array(differences))
-
+shutil.copyfile(file, '/copy/%s_%s.npz' % 
+(file1,file2))
