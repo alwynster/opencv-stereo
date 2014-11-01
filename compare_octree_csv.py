@@ -1,3 +1,4 @@
+#!/bin/env python2
 '''
 Created on 01 Nov 2014
 
@@ -106,7 +107,7 @@ for point in correct_points:
         differences.append(0.5 - point.val)    
 print len(differences), 'diffs'
 
-file = '%s_%s.npz' % (file1, file2)
+file = 'compare/%s_%s.npz' % (file1, file2)
 print
 print 'saving', file
 np.savez(file, diffs=np.array(differences))
