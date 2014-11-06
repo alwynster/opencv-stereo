@@ -128,7 +128,7 @@ def execute(lib=__library__):
 	    if __library__ == 'tsukuba': data_files=data_files[:-1]
 
             print 'creating model'
-            model = gmm(data_files, debug=__dbg__, history=True, timer=__timer__)
+            model = gmm(data_files, debug=__dbg__, history=True, timer=__timer__, limit=5)
             model.fit_model(g)
             model.save_results(library=__library__, alg=alg, hist=True)
             # model.draw_results()
@@ -190,7 +190,7 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
         pp.show()
  
 if __name__ == "__main__":
-    __save_data_only__ = True    
-    execute()
+    #__save_data_only__ = True    
+    #execute()
     __save_data_only__ = False    
     execute()
