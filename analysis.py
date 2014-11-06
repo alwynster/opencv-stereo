@@ -13,11 +13,11 @@ import math
 
 __library__ = 'kitti'
 __algs__ = ['var'] #var bm sgbm sad hh
-__G__ = range(2,3)
+__G__ = range(1,2)
 __timer__ = True
 __dbg__ = False
-__begin__ = 1
-__end__ = 10
+__begin__ = 0
+__end__ = 11
 __dtype__ = 'float32'
 __save_data_only__ = False
 
@@ -58,6 +58,11 @@ def execute(lib=__library__):
 
         found_count = 0
         full_count = 0
+#        cv2.imshow('1',  images.fetch_disp(alg, 1, __library__))
+#        cv2.imshow('1b', (images.fetch_ground(1, __library__).astype('float') - images.fetch_disp(alg, 1, __library__)[:,:,0].astype('float')).astype('uint8'))
+#        cv2.imshow('2',  images.fetch_disp(alg, 2, __library__))
+#        cv2.imshow('2b', (images.fetch_ground(2, __library__).astype('float') - images.fetch_disp(alg, 2, __library__)[:,:,0].astype('float')).astype('uint8'))
+        cv2.waitKey()
         if __save_data_only__:
             print 'fetching data'
 	    print __library__
@@ -65,6 +70,10 @@ def execute(lib=__library__):
                 orig = images.fetch_orig(i, __library__)
                 ground = images.fetch_ground(i, __library__)
                 disp = images.fetch_disp(alg, i, __library__)
+                
+#                cv2.imshow('disp', disp)
+#                cv2.imshow('diff', (ground.astype('float') - disp[:,:,0].astype('float')).astype('uint8'))
+#                cv2.waitKey()
 
 		if orig is None: print 'orig is None'
 		if ground is None: print 'ground is None'
@@ -124,11 +133,10 @@ def execute(lib=__library__):
 
             data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(0, int(math.floor((__end__ - __begin__) / 10.)))]
             print data_files
-	    # data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(int(__begin__ / 10.), int(math.ceil(__end__ / 10.)))]
-	    if __library__ == 'tsukuba': data_files=data_files[:-1]
-
+            # data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(int(__begin__ / 10.), int(math.ceil(__end__ / 10.)))]
+        if __library__ == 'tsukuba': # data_files=data_files[:-1]
             print 'creating model'
-            model = gmm(data_files, debug=__dbg__, history=True, timer=__timer__, limit=5)
+            model = gmm(data_files, debug=__dbg__, history=True, timer=__timer__)
             model.fit_model(g)
             model.save_results(library=__library__, alg=alg, hist=True)
             # model.draw_results()
@@ -140,11 +148,16 @@ def execute(lib=__library__):
         print "done"
 
 def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_hist=True, save=False, xlim=None, print_result=True, training=True):
-    part = 'training' if training else 'testing'
+#    part = 'training' if training else 'testing'
+#    if G == 0:
+#        model = gmm(texts = True, gmm_txt='%s/%s/gmm_%s_%d.npz' % (lib, part, alg, G+1), hist_txt=('%s/%s/hist_%s_%d.npz' % (lib, part, alg, G+1)))
+#    else:
+#        model = gmm(texts = True, gmm_txt='%s/%s/gmm_%s_%d.npz' % (lib, part, alg, G), hist_txt=('%s/%s/hist_%s_%d.npz' % (lib, part, alg, G)))
+
     if G == 0:
-        model = gmm(texts = True, gmm_txt='%s/%s/gmm_%s_%d.npz' % (lib, part, alg, G+1), hist_txt=('%s/%s/hist_%s_%d.npz' % (lib, part, alg, G+1)))
+        model = gmm(texts = True, gmm_txt='%s/gmm_%s_%d.npz' % (lib, alg, G+1), hist_txt=('%s/hist_%s_%d.npz' % (lib, alg, G+1)))
     else:
-        model = gmm(texts = True, gmm_txt='%s/%s/gmm_%s_%d.npz' % (lib, part, alg, G), hist_txt=('%s/%s/hist_%s_%d.npz' % (lib, part, alg, G)))
+        model = gmm(texts = True, gmm_txt='%s/gmm_%s_%d.npz' % (lib, alg, G), hist_txt=('%s/hist_%s_%d.npz' % (lib, alg, G)))
     x = model.bins
     bin_width = x[1] - x[0]
     x = np.linspace(model.bins[0], model.bins[-1], num=10000)
@@ -162,7 +175,8 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
     if save:
         leg = ['\ss{%s}' % l for l in leg]
 #         if G == 0: leg = None
-        images.save_latex(x, y, leg, '%s_%s_gmm_%s_%s' % (lib, part, alg, G_code), 'Error', 'Relative weight', 0.48, xlim=xlim, model=model, ylim=None)
+#        images.save_latex(x, y, leg, '%s_%s_gmm_%s_%s' % (lib, part, alg, G_code), 'Error', 'Relative weight', 0.48, xlim=xlim, model=model, ylim=None)
+        images.save_latex(x, y, leg, '%s_tmp_gmm_%s_%s' % (lib, alg, G_code), 'Error', 'Relative weight', 0.48, xlim=xlim, model=model, ylim=None)
     if draw:
         if draw_hist:
             pp.figure()
@@ -190,7 +204,7 @@ def plot_gmm(lib=__library__, alg=__algs__[0], G=1, draw=True, show=True, draw_h
         pp.show()
  
 if __name__ == "__main__":
-    #__save_data_only__ = True    
-    #execute()
+    __save_data_only__ = True    
+    execute()
     __save_data_only__ = False    
     execute()

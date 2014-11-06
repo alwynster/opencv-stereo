@@ -56,7 +56,7 @@ def calculate_disp(min_frame, max_frame, algs):
 
 
 if __name__ == "__main__":
-    start = 1
-    end = 10
+    start = 10
+    end = 11
     # calculate_disp(start, end, ["bm", "var", "hh", "sgbm"])
     calculate_disp(start, end, ["var"])
