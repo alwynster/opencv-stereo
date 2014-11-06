@@ -12,12 +12,12 @@ from timer import timer
 import math
 
 __library__ = 'kitti'
-__algs__ = ['sgbm'] #var bm sgbm sad hh
+__algs__ = ['var'] #var bm sgbm sad hh
 __G__ = range(2,3)
 __timer__ = True
 __dbg__ = False
-__begin__ = 250
-__end__ = 351
+__begin__ = 1
+__end__ = 10
 __dtype__ = 'float32'
 __save_data_only__ = False
 

@@ -1,12 +1,14 @@
 #!/usr/bin/env python2
 from analysis import plot_gmm
 import matplotlib.pyplot as pp
+import Params
 
 __algs__    = ['sad'] # ['bm', 'sad', 'hh', 'var', 'sgbm'] # 'bm',
 __algs__    = ['sgbm'] 
 save        = True
 lib         = 'kitti'
 training    = False
+Params.__article__ = True
 if lib == 'kitti':
     limits      = {'bm': (-25,25), 'sgbm': (-25,25), 'hh': (-50, 50), 'var':(-150,100), 'sad':(-75,75)}
 else:
