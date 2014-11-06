@@ -12,16 +12,20 @@ import sys
 import os
 import shutil
 import matplotlib.pyplot as pp
+import os.path as path
 
 eps = 1e-3
 if len(sys.argv) != 4:
     print "USAGE: compare_octree_csv.py correct_tree.csv compare_tree.csv height"
     sys.exit()
 
+limit = None
+
 minx = maxx = miny = maxy = res = 0.0
 
 file1 = sys.argv[1]
 file2 = sys.argv[2]
+outfile = 'compare/%s_%s.npz' % (path.split(file1)[1], path.split(file2)[1])
 height = float(sys.argv[3])
 
 data = list()
@@ -50,7 +54,10 @@ for line in open(file2):
     else:
         dat = np.array(spl).astype('float')
         if abs(dat[2] - height) <= dat[3]/2.0:
-            data2.append(dat)
+	    if limit is None:
+                data2.append(dat)
+	    elif np.sqrt(np.sum(np.square(np.array([dat[0], dat[1], dat[2]])))) < limit:
+		data2.append(dat)
 
 img = np.zeros(((maxy - miny) / res, (maxx - minx) / res), dtype='float')
 
@@ -129,12 +136,11 @@ for i in range(sh[0]):
         if abs(diff) > eps:
             diffs.append(diff)
 
-fn = 'compare/%s_%s.npz' % (file1, file2)
 print
-print 'saving', fn
-np.savez(fn, diffs=np.array(diffs))
+print 'saving', outfile
+np.savez(outfile, diffs=np.array(diffs))
 try:
-    shutil.copyfile(fn, '/copy/%s_%s.npz' % (file1,file2))
+    shutil.copyfile(outfile, '/copy/%s' % (path.split(outfile)[1]))
 except:
     print '',
         
@@ -237,12 +243,11 @@ for point in correct_points:
         differences.append(0.5 - point.val)    
 print len(differences), 'diffs'
 
-file = 'compare/%s_%s.npz' % (file1, file2)
 print
-print 'saving', file
-np.savez(file, diffs=np.array(differences))
+print 'saving', outfile
+np.savez(outfile, diffs=np.array(differences))
 try:
-    shutil.copyfile(file, '/copy/%s_%s.npz' % (file1,file2))
+    shutil.copyfile(outfile, '/copy/%s' % path.split(outfile)[1])
 except:
     print '',
 '''
