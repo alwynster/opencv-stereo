@@ -11,15 +11,16 @@ import datetime
 from timer import timer
 import math
 
-__library__ = 'kitti'
-__algs__ = ['var'] #var bm sgbm sad hh
-__G__ = range(1,2)
+__library__ = 'tsukuba'
+__algs__ = ['sgbm'] #var bm sgbm sad hh
+__G__ = range(1,4)
 __timer__ = True
 __dbg__ = False
-__begin__ = 0
-__end__ = 11
+__begin__ = 1
+__end__ = 101
 __dtype__ = 'float32'
 __save_data_only__ = False
+limit = None
 
 def execute(lib=__library__):
     start = datetime.datetime.now()
@@ -134,9 +135,9 @@ def execute(lib=__library__):
             data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(0, int(math.floor((__end__ - __begin__) / 10.)))]
             print data_files
             # data_files = ['%s/data/data_%s_%d.npz' % (lib, alg, i) for i in range(int(__begin__ / 10.), int(math.ceil(__end__ / 10.)))]
-        if __library__ == 'tsukuba': # data_files=data_files[:-1]
+        #if __library__ == 'tsukuba': # data_files=data_files[:-1]
             print 'creating model'
-            model = gmm(data_files, debug=__dbg__, history=True, timer=__timer__)
+            model = gmm(data_files, debug=__dbg__, history=True, timer=__timer__, limit=limit)
             model.fit_model(g)
             model.save_results(library=__library__, alg=alg, hist=True)
             # model.draw_results()
