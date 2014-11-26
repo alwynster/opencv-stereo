@@ -11,9 +11,9 @@ import datetime
 from timer import timer
 import math
 
-__library__ = 'tsukuba'
-__algs__ = ['sgbm'] #var bm sgbm sad hh
-__G__ = range(1,4)
+__library__ = 'kitti'
+__algs__ = ['var'] #var bm sgbm sad hh
+__G__ = range(3,5)
 __timer__ = True
 __dbg__ = False
 __begin__ = 1
