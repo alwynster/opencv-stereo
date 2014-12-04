@@ -13,7 +13,7 @@ import math
 
 __library__ = 'kitti'
 __algs__ = ['var'] #var bm sgbm sad hh
-__G__ = range(3,5)
+__G__ = range(4,10)
 __timer__ = True
 __dbg__ = False
 __begin__ = 1
